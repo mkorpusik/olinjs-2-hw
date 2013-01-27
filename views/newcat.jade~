@@ -1,9 +1,0 @@
-extends layout
-
-block content
-  h1 New Cat
-  p Name: #{cat.name}
-  p Colors: 
-  div
-    each color, i in #{cat.color}
-  p Age: #{cat.age}

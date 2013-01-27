@@ -1,6 +1,6 @@
 
 /*
- * Sources used: http://stackoverflow.com/questions/4550505/getting-random-value-from-an-array, http://www.javascriptkit.com/javatutors/randomnum.shtml, http://stackoverflow.com/questions/1996747/add-new-value-to-an-existing-array-in-javascript, http://www.w3schools.com/js/js_loop_for.asp, http://stackoverflow.com/questions/1181575/javascript-determine-whether-an-array-contains-a-value
+ * Sources used: http://stackoverflow.com/questions/4550505/getting-random-value-from-an-array, http://www.javascriptkit.com/javatutors/randomnum.shtml, http://stackoverflow.com/questions/1996747/add-new-value-to-an-existing-array-in-javascript, http://www.w3schools.com/js/js_loop_for.asp, http://stackoverflow.com/questions/1181575/javascript-determine-whether-an-array-contains-a-value, http://stackoverflow.com/questions/5679296/mongodb-mongoose-sort-error
 
  * GET cats listing.
  */
@@ -57,12 +57,9 @@ exports.newcat = function(req, res){
 exports.cats = function(req, res){
 
   // get the list of cats
-  var cats = Cat.find({}, function (err, sorted) {
+  var cats = Cat.find({}).sort('age').exec(function (err, sorted) {
     if (err)
       return console.log("error", cats);
-
-    // sort cats by age (TODO: sort numbers correctly, don't include names
-    sorted.sort('age');
     
     // send them back
     res.render('cats', {cats:sorted, title: 'Cat List Sorted by Age' });
@@ -74,29 +71,31 @@ exports.color = function(req, res){
   var color = req.params.color;
 
   // get the list of cats
-  var cats = Cat.find({'color': color}, function (err, sorted) {
+  var cats = Cat.find({'color': color}).sort('age').exec(function (err, sorted) {
     if (err)
       return console.log("error", cats);
-
-    // sort cats by age (TODO: sort numbers correctly, don't include names
-    sorted.sort('age');
     
     // send them back
     res.render('cats', {cats:sorted, title: 'Cat List Sorted by Color' });
   });
 };
 
-// TODO: deletes the oldest cat
+// deletes the oldest cat
 exports.delete_old = function(req, res){
 
   // get the list of cats
-  var cats = Cat.find({}, function (err, sorted) {
+  var cats = Cat.find({}).sort('age').exec(function (err, sorted) {
     if (err)
       return console.log("error", cats);
 
-    // sort cats by age (TODO: sort numbers correctly, don't include names
-    sorted.sort('age');
-    
+    // get oldest cat (i.e. last cat on the list)
+    oldest_cat = sorted[sorted.length-1]
+
+    // remove oldest cat
+    Cat.remove({'_id': oldest_cat._id}, function (err) {
+      if (err) return handleError(err);
+    });
+
     // send them back
     res.render('cats', {cats:sorted, title: 'Remove Oldest Cat' });
   });

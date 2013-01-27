@@ -29,7 +29,6 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-app.get('/', routes.index);
 app.get('/cats/new', cat.newcat);
 app.get('/cats', cat.cats);
 app.get('/cats/color/:color', cat.color);
